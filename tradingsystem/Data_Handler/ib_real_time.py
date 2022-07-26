@@ -6,7 +6,6 @@ Created on Tue Dec 14 14:43:25 2021
 @author: ron
 """
 from Data_Handler.base import AbstractDataHandler
-from datetime import datetime
 import queue
 import time
 from common import check_ping
@@ -120,64 +119,3 @@ class IBRealTimeBarHandler(AbstractDataHandler):
                                                 duration_str, "5 secs", whatToShow="MIDPOINT", 
                                                 keepUpToDate=False)
       
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # print("Cancelling real time bar subscription...")
-        # for i in range(0, len(self.contracts_list)):
-        #     self.twsclient.cancelRealTimeBars(i)
-        # print("Cancelling real time bar subscription is sucessful!")
-        # print("Waiting for a historical data farm is connected again...")
-        # while True:
-        #     try:
-        #         code = self.twsclient.error_code.get(False)
-        #     except queue.Empty:
-        #         pass
-        #     else:
-        #         #A historical data farm is disconnected
-        #         if code == 2106:
-        #             print("Connection reestablised, backfill the missing bar and then resubscribe again.")
-        #             current_time = int(time.time())
-        #             time_missing = current_time - self.twsclient.last_bar_time
-        #             if time_missing < 60:
-        #                 #minimum step size for ib api
-        #                 duration_str = "60 S"
-        #             else:
-        #                 duration_str = str(time_missing) + " S"
-
-        #             for i in range(0, len(self.twsclient.contracts_list)):                   
-        #                 self.twsclient.reqHistoricalData(i, self.twsclient.contracts_list[i], "",
-        #                                                  duration_str, "5 secs", whatToShow= "MIDPOINT", 
-        #                                                  keepUpToDate=True)
-        #             break
-        # print("Subscription is sucessful!")
-
-
