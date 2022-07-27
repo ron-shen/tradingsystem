@@ -1,11 +1,10 @@
-from Calendar.calendar import Calendlar
-from datetime import datetime, date, timedelta, time
+from datetime import datetime, date, timedelta, time, timezone
 import calendar
+from Trading_Schedule.base import BaseSchedule
 
-
-class USStockSchedule:
+class USStockSchedule(BaseSchedule):
     def __init__(self, year=datetime.utcnow().year):
-        self.calendar = Calendlar()
+        super().__init__()
         self.close_early_date = set()
         self.summer_start_date = None
         self.winter_start_date = None
@@ -19,20 +18,24 @@ class USStockSchedule:
         #day before independence day 1330 - 1700
         #black friday 1430 - 1800
         #christmas eve 1430 - 1800
-        #all times are in UTC
+        #return timestamp are in UTC
         is_summer_time = self.summer_start_date <= date < self.winter_start_date
-
+        
         if is_summer_time:
+            start = datetime.combine(date, time(13, 30, tzinfo=timezone.utc)).timestamp()
             if date in self.close_early_date:
-                return (time(13,30), time(17,00))
+                end = datetime.combine(date, time(17, 00, tzinfo=timezone.utc)).timestamp()
             else:
-                return (time(13,30), time(20,00))
+                end = datetime.combine(date, time(20, 00, tzinfo=timezone.utc)).timestamp()
+            return (int(start), int(end))
         #winter time   
         else:
+            start = datetime.combine(date, time(14, 30, tzinfo=timezone.utc)).timestamp()
             if date in self.close_early_date:
-                return (time(14,30), time(18,00))
+                end = datetime.combine(date, time(18, 00, tzinfo=timezone.utc)).timestamp()
             else:
-                return (time(14,30), time(21,00))
+                end = datetime.combine(date, time(21, 00, tzinfo=timezone.utc)).timestamp()
+            return (int(start), int(end))
 
   
     def _config(self, year):
@@ -120,15 +123,7 @@ class USStockSchedule:
             holiday -= timedelta(days=1)
         self.calendar.add_holiday(holiday)
 
-    
-    def _gen_weekends(self, year):
-        d = date(year, 1, 1)
-        while d != date(year + 1, 1, 1):
-            if 6 <= d.isoweekday() <= 7:
-                self.calendar.add_holiday(d)
-            d += timedelta(days=1)    
-            
-               
+                   
     def _find_nth_day(self, year, month, day, nth):
         #day: Monday = 0 to Sunday = 6
         if date(year, month, 1).weekday() == day:

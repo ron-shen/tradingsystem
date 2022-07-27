@@ -8,7 +8,7 @@ Created on Tue Dec 17 12:46:25 2021
 from Broker_Handler.base import AbstractBroker
 from Event.event import Direction
 from IBTWS.orders import Orders
-from IBTWS.contracts import Contracts
+from IBTWS.contracts import create_contract
 import queue
 import time
 
@@ -21,13 +21,8 @@ class IBBroker(AbstractBroker):
         self.twsclient = twsclient
         self.contracts_list = {}
         for ticker in ticker_list:
-            #base, quote = ticker.split(".")
-            self.contracts_list[ticker] = Contracts.USStock(ticker)
-        # for ticker in ticker_list:
-        #     base, quote = ticker.split(".")
-        #     self.contracts_list[ticker] = Contracts.FX(base, quote)       
-
-
+            self.contracts_list[ticker] = create_contract(ticker)
+  
      
     def execute_order(self, order_event):
         self.twsclient.reqIds(-1)

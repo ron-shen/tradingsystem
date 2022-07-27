@@ -132,13 +132,16 @@ class TestUSStockSchedule(unittest.TestCase):
         normal_winter_hours = stock_schedule.get_trading_hours(date(2023, 1, 10))
         early_winter_hours = stock_schedule.get_trading_hours(date(2023, 11, 24))
         
-        self.assertEqual(normal_summer_hours, (time(13,30), time(20,00)))
-        self.assertEqual(early_summer_hours, (time(13,30), time(17,00))) 
-        self.assertEqual(normal_winter_hours, (time(14,30), time(21,00))) 
-        self.assertEqual(early_winter_hours, (time(14,30), time(18,00))) 
+        # self.assertEqual(normal_summer_hours, (time(13,30), time(20,00)))
+        # self.assertEqual(early_summer_hours, (time(13,30), time(17,00))) 
+        # self.assertEqual(normal_winter_hours, (time(14,30), time(21,00))) 
+        # self.assertEqual(early_winter_hours, (time(14,30), time(18,00))) 
+        self.assertEqual(normal_summer_hours, (1678887000, 1678910400))
+        self.assertEqual(early_summer_hours, (1688391000, 1688403600))
+        self.assertEqual(normal_winter_hours, (1673361000, 1673384400))
+        self.assertEqual(early_winter_hours, (1700836200, 1700848800)) 
         
         
-
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)     

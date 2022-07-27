@@ -114,11 +114,17 @@ class TWSWrapper(EWrapper):
         execution.time += " GMT+0000"
         timestamp = int(datetime.datetime.strptime(execution.time , "%Y%m%d  %H:%M:%S GMT%z").timestamp())        
         self.fill_event.timestamp = timestamp
-        self.fill_event.ticker = contract.symbol
+        
+        if contract.secType == "STK":       
+            self.fill_event.ticker = contract.symbol
+        elif contract.secType == "CASH":       
+            self.fill_event.ticker = contract.symbol + "/" + contract.currency
+            
         if execution.side == "BOT":
             self.fill_event.direction = Direction.LONG
         else:
             self.fill_event.direction = Direction.SHORT
+            
         self.fill_event.exchange = execution.exchange
         self.fill_event.price = execution.price
         self.fill_event.quantity = int(execution.shares)

@@ -8,7 +8,7 @@ Created on Tue Dec  7 20:02:36 2021
 
 from IBTWS.twswrapper import TWSWrapper
 from IBTWS.ibapi.client import EClient
-from IBTWS.contracts import Contracts
+from IBTWS.contracts import create_contract
 from Event.event import BarEvent, FillEvent
 import threading
 from time import sleep
@@ -85,14 +85,7 @@ class TWSClient(TWSWrapper, EClient):
         self.last_bar_time = 0 
         self.realtime_subscribed = False
         for ticker in ticker_list:
-            #base, quote = ticker.split(".")
-            #self.contracts_list.append(Contracts.FX(base, quote))
-            self.contracts_list.append(Contracts.USStock(ticker))
-
-        # for ticker in ticker_list:
-        #     base, quote = ticker.split(".")
-        #     self.contracts_list.append(Contracts.FX(base, quote))           
-
+            self.contracts_list.append(create_contract(ticker))   
         self.time = 0
         self.reqCurrentTime()
         sleep(0.1)

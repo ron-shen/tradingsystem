@@ -24,6 +24,7 @@ from mysql.connector import connect, Error
 
 
 
+
 class TradingSession:
     """
     Enscapsulates the settings and components for
@@ -181,7 +182,7 @@ class TradingSession:
         print("Trading ends")
         self.statistics.plot_results()
 
-     
+
 #set up     
 events_queue = queue.Queue()       
 
@@ -198,10 +199,15 @@ except Error as e:
 
 mkt_open = time(13,30)
 mkt_close = time(20,0)
+# mkt_open = time(8,30)
+# mkt_close = time(20,0)
 
 symbol_list = ['AMZN']
+#symbol_list = ['USD/JPY']
+
+
 ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 60, 
-                                      "TRADES", True, events_queue, 
+                                      "MIDPOINT", True, events_queue, 
                                       db_client)
 
 portfolio = Portfolio(init_asset_val, db_client)
@@ -215,7 +221,7 @@ ib_broker = IBBroker(twsclient, events_queue, symbol_list, db_client)
 stat = Statistics(init_asset_val)
 
 
-trading_end = datetime(2022,7,27,20,0)
+trading_end = datetime(2022,7,30,20,0)
 trading_session = TradingSession(twsclient, ib_bar_handler, sma_crossover, portfolio, 
                                  max_order_handler, ib_broker, events_queue, 
                                  mkt_open, mkt_close, trading_end, stat)

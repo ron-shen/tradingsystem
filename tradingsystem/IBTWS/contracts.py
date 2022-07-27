@@ -4,7 +4,19 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 """
 
 from IBTWS.ibapi.contract import * # @UnusedWildImport
-#from IBTWS.ibapi.contract import Contract
+
+fx_pair = {"USD/JPY", "USD/EUR"}
+
+def create_contract(symbol):
+    if symbol in fx_pair:
+        pair = symbol.split("/")
+        base = pair[0]
+        quote = pair[1]
+        return Contracts.FXContract(base, quote)   
+    #a stock
+    else:
+        return Contracts.USStock(symbol)
+        
 
 class Contracts:
 
@@ -59,7 +71,7 @@ class Contracts:
         return contract
     
     @staticmethod
-    def FX(base_currency, quote_currency):
+    def FXContract(base_currency, quote_currency):
         #! [cashcontract]
         contract = Contract()
         contract.symbol = base_currency
