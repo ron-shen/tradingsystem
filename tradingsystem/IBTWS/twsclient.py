@@ -50,15 +50,15 @@ class TWSClient(TWSWrapper, EClient):
         
     
     def run(self):
-        if self.isConnected():
-            print("Running tws client...")            
-            #create thread for running the EClient message loop
-            t1 = threading.Thread(target=super().run, name="EClient.run Thread")                                  
-            t1.start()   
-            sleep(1)
-        
-        else:
-            print("TWS client is not connected to tws yet!")
+        try: 
+            if self.isConnected():
+                print("Running tws client...")            
+                #create thread for running the EClient message loop
+                t1 = threading.Thread(target=super().run, name="EClient.run Thread")                                  
+                t1.start()   
+                sleep(1)     
+        except:
+            raise Exception("TWS client is not connected to tws yet!")
             
             
     def reqHistoricalData(self, reqId , contract, endDateTime,
@@ -70,10 +70,7 @@ class TWSClient(TWSWrapper, EClient):
         #time.sleep(1)
 
 
-    def reqRealTimeBars(self, ticker_list, timeframe, whatToShow, useRTH):
-        #reqRealTimeBars returns bar in every 5 seconds
-        #these 5 second bars are then constructed into bar with defined timeframe by calling _construct_bar()
-        #then it puts it into latest_bar_event queue which Data Handler can get the latest Bar Event                
+    def realtime_config(self, ticker_list, timeframe, whatToShow, useRTH):
         self.ticker_list = ticker_list
         self.timeframe = timeframe
         self._bars = {k: BarEvent(None, ticker_list[k], None, -1, 999999, None, 0 ) for k in range(0, len(ticker_list))}
@@ -85,12 +82,29 @@ class TWSClient(TWSWrapper, EClient):
         self.last_bar_time = 0 
         self.realtime_subscribed = False
         for ticker in ticker_list:
-            self.contracts_list.append(create_contract(ticker))   
-        self.time = 0
-        self.reqCurrentTime()
-        sleep(0.1)
-        next_divisable = self.time + (timeframe - self.time % timeframe)
-        sleep(next_divisable - self.time + 5)  
+            self.contracts_list.append(create_contract(ticker))          
+
+    def reqRealTimeBars(self, ticker_list, timeframe, whatToShow, useRTH):
+        #reqRealTimeBars returns bar in every 5 seconds
+        #these 5 second bars are then constructed into bar with defined timeframe by calling _construct_bar()
+        #then it puts it into latest_bar_event queue which Data Handler can get the latest Bar Event                
+        # self.ticker_list = ticker_list
+        # self.timeframe = timeframe
+        # self._bars = {k: BarEvent(None, ticker_list[k], None, -1, 999999, None, 0 ) for k in range(0, len(ticker_list))}
+        # self.lastest_bar_event = queue.Queue()
+        # self.contracts_list = []
+        # self.whatToShow = whatToShow
+        # self.useRTH = useRTH
+        # #ib return starting time of the bar
+        # self.last_bar_time = 0 
+        # self.realtime_subscribed = False
+        # for ticker in ticker_list:
+        #     self.contracts_list.append(create_contract(ticker))   
+        # self.time = 0
+        # self.reqCurrentTime()
+        # sleep(0.1)
+        # next_divisable = self.time + (timeframe - self.time % timeframe)
+        # sleep(next_divisable - self.time + 5)  
                                                     
         for i in range(0, len(self.contracts_list)):
             super().reqRealTimeBars(i, self.contracts_list[i], 5, self.whatToShow, self.useRTH, [])

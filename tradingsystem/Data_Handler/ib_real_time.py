@@ -34,6 +34,8 @@ class IBRealTimeBarHandler(AbstractDataHandler):
         self.whatToShow = whatToShow
         self.useRTH = useRTH
         self.bars_store = []
+        self.twsclient.realtime_config(self.ticker_list, self.timeframe, 
+                                       self.whatToShow, self.useRTH)
 
                 
     def get_next(self):
@@ -51,7 +53,7 @@ class IBRealTimeBarHandler(AbstractDataHandler):
                 self.save_to_db(bar_event)
 
                                    
-    def start_request_data(self):
+    def request_data(self):
         #call this function first before calling get_next()
         self.twsclient.reqRealTimeBars(self.ticker_list, self.timeframe, 
                                        self.whatToShow, self.useRTH)

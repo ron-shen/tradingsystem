@@ -5,7 +5,6 @@ Created on Sat Dec 18 19:32:03 2021
 
 @author: ron
 """
-
 import queue
 from Event.event import EventType
 from Data_Handler.ib_real_time import IBRealTimeBarHandler
@@ -16,13 +15,11 @@ from Broker_Handler.ib_broker import IBBroker
 from Statistics.statistics import Statistics
 from IBTWS.twsclient import TWSClient
 from Strategy.macdrsi import MACDRSI
-from time import sleep
-from datetime import datetime, timezone, time, date, timedelta
+import time
+from datetime import datetime, timezone, date, timedelta
 from common import SessionType, check_ping
 from mysql.connector import connect, Error
-
-
-
+from Trading_Schedule.fx_schedule import FXSchedule
 
 
 class TradingSession:
@@ -34,7 +31,7 @@ class TradingSession:
         self, twsclient, price_handler, 
         strategy, portfolio, 
         order_handler, broker, events_queue,
-        mkt_open, mkt_close, trading_end, statistics=None, 
+        trading_schedule, trading_end, statistics=None, 
         ):
         """
         TODO
@@ -55,10 +52,8 @@ class TradingSession:
         self.statistics = statistics
         self.twsclient = twsclient
         self.previous_day = None
-        self.mkt_open = mkt_open
-        #give some time to get the last bar
-        self.mkt_close = time(mkt_close.hour, 1)
-        self.trading_end = trading_end + timedelta(minutes=1)
+        self.trading_end = trading_end.replace(tzinfo=timezone.utc).timestamp()
+        self.trading_schedule = trading_schedule
 
              
     def run_session(self):
@@ -69,101 +64,78 @@ class TradingSession:
         loop continue until the event queue has been
         emptied.
         """
-        #wait for market open...
-        cur_time = datetime.utcnow().time()
-        if cur_time < self.mkt_open:
-            sleep_time = datetime.combine(date.today(), self.mkt_open) - datetime.combine(date.today(), cur_time)
-            print(sleep_time.seconds)
-            sleep(sleep_time.seconds)   
-                   
-        self.twsclient.run()
-        self.price_handler.start_request_data()
-        time_now = datetime.utcnow()
-        while time_now <= self.trading_end:
-            if not self.mkt_open <= time_now.time() <= self.mkt_close:
-                self.wait_until_market_open()
-
-            self.price_handler.get_next()
-            self.price_handler.check_bar_interruption()
-            self.broker.get_fill_event()
-            try:                
-                event = self.events_queue.get(False)
-            except queue.Empty:
-                pass            
-            else:
-                day = datetime.fromtimestamp(event.timestamp, timezone.utc).date()
-                if self.previous_day is None:
-                    self.previous_day = day
-                elif day > self.previous_day:
-                    self.statistics.update(self.previous_day, self.portfolio.get_asset_val())
-                    self.portfolio.save_to_db(self.previous_day)
-                    self.previous_day = day
-
-                if event is not None:
-                    if event.type == EventType.BAR:
-                        self.strategy.calculate_signal(event)
-                        self.portfolio.on_bar(event)                 
-                    elif event.type == EventType.SIGNAL:
-                        self.order_handler.create_order(event)
-                    elif event.type == EventType.ORDER:
-                        self.broker.execute_order(event)
-                    elif event.type == EventType.FILL:
-                        self.portfolio.on_fill(event)
+        while time.time() <= self.trading_end:
+            today = date.today()            
+            if not self.trading_schedule.calendar.is_holiday(today):
+                start, end = self.trading_schedule.get_trading_hours(today)
+                print("start: ", start)
+                print("end: ", end)
+                cur_time = time.time()
+                if cur_time < start:
+                    sleep_time = start - cur_time
+                    time.sleep(sleep_time)                  
+                self.twsclient.run()
+                self.price_handler.request_data()
+                while start <= time.time() <= end:
+                    self.price_handler.get_next()
+                    # self.price_handler.check_bar_interruption()
+                    self.broker.get_fill_event()
+                    try:                
+                        event = self.events_queue.get(False)
+                    except queue.Empty:
+                        pass            
                     else:
-                        raise NotImplementedError("Unsupported event.type '%s'" % event.type)
+                        day = datetime.fromtimestamp(event.timestamp, timezone.utc).date()
+                        if self.previous_day is None:
+                            self.previous_day = day
+                        elif day > self.previous_day:
+                            self.statistics.update(self.previous_day, self.portfolio.get_asset_val())
+                            self.portfolio.save_to_db(self.previous_day)
+                            self.previous_day = day
 
-            time_now = datetime.utcnow()
+                        if event is not None:
+                            if event.type == EventType.BAR:
+                                self.strategy.calculate_signal(event)
+                                self.portfolio.on_bar(event)                 
+                            elif event.type == EventType.SIGNAL:
+                                self.order_handler.create_order(event)
+                            elif event.type == EventType.ORDER:
+                                self.broker.execute_order(event)
+                            elif event.type == EventType.FILL:
+                                self.portfolio.on_fill(event)
+                            else:
+                                raise NotImplementedError("Unsupported event.type '%s'" % event.type)                          
+            self._reset()       
+            self._sleep_next_open_day(today)
 
-        self.statistics.update(self.previous_day, self.portfolio.get_asset_val())
-        self.portfolio.save_to_db(self.previous_day)
-        print("Market closed!", datetime.utcnow())
-
-
-    def wait_until_market_open(self):
-        print("cancelling existing subscribtion...")
-        for i in range(0, len(self.twsclient.contracts_list)):
-                self.twsclient.cancelRealTimeBars(i)
-        self.twsclient.realtime_subscribed = False
-        sleep(1)
-        print("disconnect tws...")
-        self.twsclient.disconnect()
-        #sleep for market open again 
-        cur_time = datetime.utcnow().time()
-        day_now = datetime.utcnow().date()
-        next_day = day_now + timedelta(days=1)
-        print("day_now is ", day_now)
-        print("next day is ", next_day)
-        if next_day.isoweekday() == 6: #saturday
-            #wait next Monday trading day
-            print("next day is SAT...")
-            next_day += timedelta(days=2)   
-        sleep_time = datetime.combine(next_day, self.mkt_open) - datetime.combine(day_now, cur_time)
-        print("sleep", sleep_time.total_seconds(), " seconds for market open...")       
-        sleep(sleep_time.total_seconds())
-
-        print("testing network connection...")
-        while not check_ping():
-            pass
-        print("network is ok!")
-        print("connecting to tws...")
-        self.twsclient.connect("127.0.0.1", 7497, clientId=0)
-        #wait for connecting to tws 
-        while not self.twsclient.isConnected():
-            pass
-        print("reconnection is successful!")
-        self.twsclient.run() 
-        print("resubscribe data...")
-        print("current time:", datetime.utcnow().time())
-        self.twsclient.resubscribe_RealTimeBars()
-        while not self.twsclient.realtime_subscribed:
-            pass             
-
-
+        
+    def _reset(self):
+        if self.twsclient.realtime_subscribed:
+            print("cancelling existing subscribtion...")
+            for i in range(len(self.twsclient.contracts_list)):
+                    self.twsclient.cancelRealTimeBars(i)
+            self.twsclient.realtime_subscribed = False
+            time.sleep(1)
+            print("disconnect tws...")
+            self.twsclient.disconnect()        
+         
+         
+    def _sleep_next_open_day(self, today):
+        next_day = today + timedelta(days=1)
+        next_start, _ = self.trading_schedule.get_trading_hours(next_day)
+        cur_time = time.time()
+        sleep_time = next_start - cur_time
+        print(sleep_time)
+        time.sleep(sleep_time)
+        
+        
     def start_trading(self, testing=False):
         """
         Runs either a backtest or live session, and outputs performance when complete.
         """
         self.run_session()
+        print("disconnecting tws...")
+        self.twsclient.disconnect()
         print("---------------------------------")
         print('Ending cash: ' + str(self.portfolio.cash))
         print('Ending market value: ' + str(self.portfolio.market_value))
@@ -182,7 +154,6 @@ class TradingSession:
         print("Trading ends")
         self.statistics.plot_results()
 
-
 #set up     
 events_queue = queue.Queue()       
 
@@ -195,15 +166,12 @@ twsclient.connect("127.0.0.1", 7497, clientId=0)
 try:
     db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
 except Error as e:
-    print(e)
+    raise Exception(e)
 
-mkt_open = time(13,30)
-mkt_close = time(20,0)
-# mkt_open = time(8,30)
-# mkt_close = time(20,0)
 
-symbol_list = ['AMZN']
-#symbol_list = ['USD/JPY']
+trading_schedule = FXSchedule(2022)
+#symbol_list = ['AMZN']
+symbol_list = ['USD/JPY']
 
 
 ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 60, 
@@ -221,14 +189,12 @@ ib_broker = IBBroker(twsclient, events_queue, symbol_list, db_client)
 stat = Statistics(init_asset_val)
 
 
-trading_end = datetime(2022,7,30,20,0)
+trading_end = datetime(2022,12,31,21,0)
 trading_session = TradingSession(twsclient, ib_bar_handler, sma_crossover, portfolio, 
                                  max_order_handler, ib_broker, events_queue, 
-                                 mkt_open, mkt_close, trading_end, stat)
+                                 trading_schedule, trading_end, stat)
 
 trading_session.start_trading()
 
-print("disconnecting tws...")
-twsclient.disconnect()
 
 
