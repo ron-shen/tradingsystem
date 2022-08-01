@@ -134,6 +134,12 @@ class TWSClient(TWSWrapper, EClient):
             self.cond.wait()
             print("Missing data filled...")      
 
+    
+    def reqIds(self):
+        with self.cond:
+            super().reqIds(-1)
+            self.cond.wait()
+    
 
     def _construct_bar(self, ticker_id, current_bar):
         #constrtuct bar from 5 seconds bar in defined timeframe

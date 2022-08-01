@@ -1,5 +1,6 @@
 from datetime import datetime, time, timezone, timedelta, date
 from Trading_Schedule.base import BaseSchedule
+import time as ti
 
 class FXSchedule(BaseSchedule):
     def __init__(self, year=datetime.utcnow().year):
@@ -8,7 +9,15 @@ class FXSchedule(BaseSchedule):
         
 
     def get_trading_hours(self, date):
-        start = datetime.combine(date, time(1, 00, tzinfo=timezone.utc)).timestamp()
+        """
+        TODO if the current time is between the trading time, start immediately
+            rather than wait for the next open day
+        """
+        # if self.calendar.is_holiday(date):
+        #     start = datetime.combine(date, time(21, 00, tzinfo=timezone.utc)).timestamp()
+        # else:
+        #     start = ti.time()
+        start = datetime.combine(date, time(21, 15, tzinfo=timezone.utc)).timestamp()
         end = datetime.combine(date + timedelta(days=1), time(21, 00, tzinfo=timezone.utc)).timestamp()      
         return (start, end)
     
@@ -22,7 +31,9 @@ class FXSchedule(BaseSchedule):
         
         
 
+a = FXSchedule()
 
+a.get_trading_hours(date.today())
 
 
 

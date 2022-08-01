@@ -80,7 +80,9 @@ class TWSWrapper(EWrapper):
 
 
     def nextValidId(self, orderId):
-        self.nextValidOrderId = orderId
+        with self.cond:
+            self.nextValidOrderId = orderId
+            self.cond.notify_all()
 
 
     def openOrder(self, orderId, contract, order, orderState):

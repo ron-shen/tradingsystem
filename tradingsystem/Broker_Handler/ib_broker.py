@@ -25,16 +25,19 @@ class IBBroker(AbstractBroker):
   
      
     def execute_order(self, order_event):
-        self.twsclient.reqIds(-1)
-        time.sleep(1)
-        if order_event.direction == Direction.LONG:
-            order = Orders.MarketOrder("BUY", order_event.quantity)
-
-        #order_event.direction == Direction.SHORT    
+        if time.time() - order_event.timestamp >= 300:
+            print("Order rejected as the signal generated is at least 5 mins before")
+        
         else:
-            order = Orders.MarketOrder("SELL", order_event.quantity)
-            
-        self.twsclient.placeOrder(self.twsclient.nextValidOrderId, self.contracts_list[order_event.ticker], order)
+            self.twsclient.reqIds()
+            if order_event.direction == Direction.LONG:
+                order = Orders.MarketOrder("BUY", order_event.quantity)
+
+            #order_event.direction == Direction.SHORT    
+            else:
+                order = Orders.MarketOrder("SELL", order_event.quantity)
+                
+            self.twsclient.placeOrder(self.twsclient.nextValidOrderId, self.contracts_list[order_event.ticker], order)
 
 
     def get_fill_event(self):

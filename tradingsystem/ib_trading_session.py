@@ -17,10 +17,9 @@ from IBTWS.twsclient import TWSClient
 from Strategy.macdrsi import MACDRSI
 import time
 from datetime import datetime, timezone, date, timedelta
-from common import SessionType, check_ping
+from common import SessionType
 from mysql.connector import connect, Error
 from Trading_Schedule.fx_schedule import FXSchedule
-from threading import Condition
 
 
 class TradingSession:
@@ -85,7 +84,7 @@ class TradingSession:
                 self._event_loop(start, end)  
                                            
             self._reset()       
-            self._sleep_next_open_day(today)
+            self._sleep_next_open_day()
 
 
     def _event_loop(self, start, end):
@@ -127,11 +126,13 @@ class TradingSession:
             self.twsclient.disconnect()        
          
          
-    def _sleep_next_open_day(self, today):
-        next_day = today + timedelta(days=1)
-        next_start, _ = self.trading_schedule.get_trading_hours(next_day)
+    def _sleep_next_open_day(self):
+        day = date.today()
+        while self.trading_schedule.calendar.is_holiday(day):
+            day += 1
+        start, _ = self.trading_schedule.get_trading_hours(day)
         cur_time = time.time()
-        sleep_time = next_start - cur_time
+        sleep_time = start - cur_time
         print(sleep_time)
         time.sleep(max(0, sleep_time))
         
@@ -165,7 +166,7 @@ class TradingSession:
 events_queue = queue.Queue()       
 
 
-init_asset_val = 10000
+init_asset_val = 100000
 session_type = SessionType.LIVE
 
 twsclient = TWSClient()
@@ -188,7 +189,7 @@ ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 300,
 portfolio = Portfolio(init_asset_val, db_client)
 max_order_handler = MaxOrderHandler(portfolio, events_queue, session_type, db_client)
 
-sma_crossover = SMACrossover(symbol_list, 1, 2, events_queue, session_type, portfolio)
+sma_crossover = SMACrossover(symbol_list, 10, 20, events_queue, session_type, portfolio)
 macdrsi = MACDRSI(symbol_list, 12, 26, 9, 14, events_queue, session_type, portfolio, db_client)
 
 ib_broker = IBBroker(twsclient, events_queue, symbol_list, db_client)
