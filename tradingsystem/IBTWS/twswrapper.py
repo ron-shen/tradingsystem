@@ -9,23 +9,19 @@ Created on Tue Dec  7 20:05:06 2021
 
 from IBTWS.ibapi.wrapper import EWrapper
 import datetime
-from IBTWS.ibapi.common import RealTimeBar
 from Event.event import Direction
 from copy import deepcopy
-import threading
 from common import Bar, Error
 from IBTWS.ibapi.common import TickerId, TickAttrib
 from decimal import Decimal
 from ibapi.ticktype import * # @UnusedWildImport
 import time
-import csv
 
 
 class TWSWrapper(EWrapper):
     
     def __init__(self):
         EWrapper.__init__(self)
-        #self.count = 0
 
 
     def historicalData(self, reqId, bar):
@@ -55,7 +51,8 @@ class TWSWrapper(EWrapper):
     def historicalDataEnd(self, reqId, start, end): 
         """ Marks the ending of the historical bars reception. """
         print('Start Date: {start_date}, End Date: {end_date}'.format(start_date=start, end_date=end))              
-        self.resubscribe_RealTimeBars()
+        with self.cond:
+            self.cond.notify_all()
 
         
     def realtimeBar(self, reqId, time, open_, high, low, close, volume, wap, count):
@@ -66,7 +63,9 @@ class TWSWrapper(EWrapper):
             self._construct_bar(reqId, current_bar) 
 
         if not self.realtime_subscribed:
-            self.realtime_subscribed = True       
+            with self.cond:
+                self.realtime_subscribed = True
+                self.cond.notify_all()       
 
 
     def historicalDataUpdate(self, reqId, bar):
@@ -162,8 +161,10 @@ class TWSWrapper(EWrapper):
 
 
     def currentTime(self, time: int):
-        self.time = time
-        print("tws time:", time)
+        with self.cond:
+            self.time = time
+            self.cond.notify_all()
+        # print("tws time:", time)
 
 
     def tickPrice(self, reqId:TickerId , tickType:TickType, price:float,

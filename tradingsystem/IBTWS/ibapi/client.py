@@ -262,7 +262,6 @@ class EClient(object):
                         logger.debug("queue.get: empty")
                         self.msgLoopTmo()
                     else:
-                        #print("EClient.run: ", threading.current_thread())
                         fields = comm.read_fields(text)
                         logger.debug("fields %s", fields)
                         self.decoder.interpret(fields)

@@ -6,6 +6,7 @@ from IBTWS.twsclient import TWSClient
 from Event.event import BarEvent
 from common import Bar
 from IBTWS.ibapi.common import BarData
+from threading import Condition
 
 
 def construct_BarData(time, open, high, low, close, volume, wap, count):

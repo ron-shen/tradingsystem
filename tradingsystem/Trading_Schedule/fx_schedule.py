@@ -8,7 +8,7 @@ class FXSchedule(BaseSchedule):
         
 
     def get_trading_hours(self, date):
-        start = datetime.combine(date, time(21, 00, tzinfo=timezone.utc)).timestamp()
+        start = datetime.combine(date, time(1, 00, tzinfo=timezone.utc)).timestamp()
         end = datetime.combine(date + timedelta(days=1), time(21, 00, tzinfo=timezone.utc)).timestamp()      
         return (start, end)
     

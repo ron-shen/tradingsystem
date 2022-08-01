@@ -23,8 +23,7 @@ class IBRealTimeBarHandler(AbstractDataHandler):
     for valid input of whatToShow and useRTH
     """
     def __init__(self, twsclient, ticker_list, timeframe, 
-                 whatToShow, useRTH, event_queue, 
-                 db_client=None
+                 whatToShow, useRTH, event_queue, db_client=None
         ):
         self.db_client = db_client
         self.twsclient = twsclient
@@ -55,49 +54,42 @@ class IBRealTimeBarHandler(AbstractDataHandler):
                                    
     def request_data(self):
         #call this function first before calling get_next()
-        self.twsclient.reqRealTimeBars(self.ticker_list, self.timeframe, 
-                                       self.whatToShow, self.useRTH)
-        print("Wait until first real time bar return...")
-        while not self.twsclient.realtime_subscribed:
-            pass
-        print("Data Subscription is successful!")                               
-
-
+        self.twsclient.reqRealTimeBars()
+        # while not self.twsclient.realtime_subscribed:
+        #     pass
+                                     
+   
+    def cancel_subscription(self):
+        if self.twsclient.realtime_subscribed:
+            self.twsclient.cancel_subscription()
+        
+        
     def check_bar_interruption(self):
         #check if bars arrive in expected time
-        #if data is not arrived within 600s, resubscribe again                    
+        #if data is not arrived within 5mins, resubscribe again                    
             current_time = time.time()                 
-            if current_time - self.twsclient.last_bar_time >= 600:
-                ping_success_count = 0
+            if current_time - self.twsclient.last_bar_time >= 300:
                 print("Data isn't arrived in expected time, backfill missing data and resubscribe...")                               
                 #ensure network is connected
-                #only 5 successive ping success will forward
                 print("testing network connection...")
-                while ping_success_count < 5:
-                    if (check_ping()):
-                        ping_success_count += 1
-                    else:
-                        ping_success_count = 0
-                print("network is ok!")
+                if check_ping():
+                    print("network is ok!")
+                else:
+                    raise Exception("network is not connected...")
+                
                 print("check if it is connected to IB...")
                 if not self.twsclient.isConnected():
                     print("tws is not connected, reconnect again...")
                     self.twsclient.connect("127.0.0.1", 7497, clientId=0)
-                    time.sleep(1)
-                    if self.twsclient.isConnected():
-                        print("reconnection is successful!")
-                        self.twsclient.run()
-                else:
-                    print("tws is connected!")
-                    print("cancelling existing subscribtion...")
-                    for i in range(0, len(self.twsclient.contracts_list)):
-                        self.twsclient.cancelRealTimeBars(i)
-                self.twsclient.realtime_subscribed = False                    
-                time.sleep(30)
+                    print("reconnection is successful!")
+                    self.twsclient.run()
+
+                print("tws is connected...")
+                self.cancel_subscription()
+                                    
                 print("backfill missing data....")
                 self.resubscribe()
-                while not self.twsclient.realtime_subscribed:
-                    pass               
+                self.request_data()             
 
 
     def resubscribe(self):
@@ -108,7 +100,6 @@ class IBRealTimeBarHandler(AbstractDataHandler):
         then request real time bar again
         """
         self.twsclient.reqCurrentTime()
-        time.sleep(0.1)
         end_time = self.twsclient.time - (self.twsclient.time % 5)
         time_missing = end_time - self.twsclient.last_bar_time
         if time_missing < 60:
@@ -116,8 +107,8 @@ class IBRealTimeBarHandler(AbstractDataHandler):
         else:
             duration_str = str(time_missing) + " S"
             
-        for i in range(0, len(self.twsclient.contracts_list)):                
-            self.twsclient.reqHistoricalData(i, self.twsclient.contracts_list[i], "",
-                                                duration_str, "5 secs", whatToShow="MIDPOINT", 
-                                                keepUpToDate=False)
+        self.twsclient.reqHistoricalData(duration_str)
+
+            
+
       

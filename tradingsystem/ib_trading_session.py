@@ -20,6 +20,7 @@ from datetime import datetime, timezone, date, timedelta
 from common import SessionType, check_ping
 from mysql.connector import connect, Error
 from Trading_Schedule.fx_schedule import FXSchedule
+from threading import Condition
 
 
 class TradingSession:
@@ -56,7 +57,7 @@ class TradingSession:
         self.trading_schedule = trading_schedule
 
              
-    def run_session(self):
+    def _run_session(self):
         """
         Carries out an infinite while loop that polls the
         events queue and directs each event to either the
@@ -64,6 +65,9 @@ class TradingSession:
         loop continue until the event queue has been
         emptied.
         """
+        if self.trading_end < time.time():
+            raise Exception("invalid trading period, trading_end is less than current time!")
+        
         while time.time() <= self.trading_end:
             today = date.today()            
             if not self.trading_schedule.calendar.is_holiday(today):
@@ -73,49 +77,52 @@ class TradingSession:
                 cur_time = time.time()
                 if cur_time < start:
                     sleep_time = start - cur_time
-                    time.sleep(sleep_time)                  
+                    print(sleep_time)
+                    time.sleep(sleep_time)
+                self.twsclient.connect("127.0.0.1", 7497, clientId=0)                
                 self.twsclient.run()
                 self.price_handler.request_data()
-                while start <= time.time() <= end:
-                    self.price_handler.get_next()
-                    # self.price_handler.check_bar_interruption()
-                    self.broker.get_fill_event()
-                    try:                
-                        event = self.events_queue.get(False)
-                    except queue.Empty:
-                        pass            
-                    else:
-                        day = datetime.fromtimestamp(event.timestamp, timezone.utc).date()
-                        if self.previous_day is None:
-                            self.previous_day = day
-                        elif day > self.previous_day:
-                            self.statistics.update(self.previous_day, self.portfolio.get_asset_val())
-                            self.portfolio.save_to_db(self.previous_day)
-                            self.previous_day = day
-
-                        if event is not None:
-                            if event.type == EventType.BAR:
-                                self.strategy.calculate_signal(event)
-                                self.portfolio.on_bar(event)                 
-                            elif event.type == EventType.SIGNAL:
-                                self.order_handler.create_order(event)
-                            elif event.type == EventType.ORDER:
-                                self.broker.execute_order(event)
-                            elif event.type == EventType.FILL:
-                                self.portfolio.on_fill(event)
-                            else:
-                                raise NotImplementedError("Unsupported event.type '%s'" % event.type)                          
+                self._event_loop(start, end)  
+                                           
             self._reset()       
             self._sleep_next_open_day(today)
 
-        
+
+    def _event_loop(self, start, end):
+        while start <= time.time() <= end:
+            self.price_handler.get_next()
+            self.price_handler.check_bar_interruption()
+            self.broker.get_fill_event()
+            try:                
+                event = self.events_queue.get(False)
+            except queue.Empty:
+                pass            
+            else:
+                day = datetime.fromtimestamp(event.timestamp, timezone.utc).date()
+                if self.previous_day is None:
+                    self.previous_day = day
+                elif day > self.previous_day:
+                    self.statistics.update(self.previous_day, self.portfolio.get_asset_val())
+                    self.portfolio.save_to_db(self.previous_day)
+                    self.previous_day = day
+
+                if event is not None:
+                    if event.type == EventType.BAR:
+                        self.strategy.calculate_signal(event)
+                        self.portfolio.on_bar(event)                 
+                    elif event.type == EventType.SIGNAL:
+                        self.order_handler.create_order(event)
+                    elif event.type == EventType.ORDER:
+                        self.broker.execute_order(event)
+                    elif event.type == EventType.FILL:
+                        self.portfolio.on_fill(event)
+                    else:
+                        raise NotImplementedError("Unsupported event.type '%s'" % event.type)
+     
+                                      
     def _reset(self):
-        if self.twsclient.realtime_subscribed:
-            print("cancelling existing subscribtion...")
-            for i in range(len(self.twsclient.contracts_list)):
-                    self.twsclient.cancelRealTimeBars(i)
-            self.twsclient.realtime_subscribed = False
-            time.sleep(1)
+        self.price_handler.cancel_subscription()
+        if self.twsclient.isConnected():
             print("disconnect tws...")
             self.twsclient.disconnect()        
          
@@ -126,14 +133,14 @@ class TradingSession:
         cur_time = time.time()
         sleep_time = next_start - cur_time
         print(sleep_time)
-        time.sleep(sleep_time)
+        time.sleep(max(0, sleep_time))
         
         
     def start_trading(self, testing=False):
         """
         Runs either a backtest or live session, and outputs performance when complete.
         """
-        self.run_session()
+        self._run_session()
         print("disconnecting tws...")
         self.twsclient.disconnect()
         print("---------------------------------")
@@ -157,11 +164,11 @@ class TradingSession:
 #set up     
 events_queue = queue.Queue()       
 
+
 init_asset_val = 10000
 session_type = SessionType.LIVE
 
 twsclient = TWSClient()
-twsclient.connect("127.0.0.1", 7497, clientId=0)
 
 try:
     db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
@@ -174,7 +181,7 @@ trading_schedule = FXSchedule(2022)
 symbol_list = ['USD/JPY']
 
 
-ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 60, 
+ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 300, 
                                       "MIDPOINT", True, events_queue, 
                                       db_client)
 
@@ -188,8 +195,7 @@ ib_broker = IBBroker(twsclient, events_queue, symbol_list, db_client)
 
 stat = Statistics(init_asset_val)
 
-
-trading_end = datetime(2022,12,31,21,0)
+trading_end = datetime(2022,12,21, 0, 00)
 trading_session = TradingSession(twsclient, ib_bar_handler, sma_crossover, portfolio, 
                                  max_order_handler, ib_broker, events_queue, 
                                  trading_schedule, trading_end, stat)
