@@ -4,11 +4,11 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 """
 
 
-from IBTWS.ibapi.order import (OrderComboLeg, Order)
-from IBTWS.ibapi.common import * # @UnusedWildImport
-from IBTWS.ibapi.tag_value import TagValue
-from IBTWS.ibapi import order_condition
-from IBTWS.ibapi.order_condition import * # @UnusedWildImport
+from ibapi.order import (OrderComboLeg, Order)
+from ibapi.common import * # @UnusedWildImport
+from ibapi.tag_value import TagValue
+from ibapi import order_condition
+from ibapi.order_condition import * # @UnusedWildImport
 
 
 class Orders:

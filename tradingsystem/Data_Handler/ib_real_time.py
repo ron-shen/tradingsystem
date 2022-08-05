@@ -80,7 +80,7 @@ class IBRealTimeBarHandler(AbstractDataHandler):
                 print("check if it is connected to IB...")
                 if not self.twsclient.isConnected():
                     print("tws is not connected, reconnect again...")
-                    self.twsclient.connect("127.0.0.1", 7497, clientId=0)
+                    self.twsclient.connect()
                     print("reconnection is successful!")
                     self.twsclient.run()
 

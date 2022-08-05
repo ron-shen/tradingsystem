@@ -18,7 +18,7 @@ from Strategy.macdrsi import MACDRSI
 import time
 from datetime import datetime, timezone, date, timedelta
 from common import SessionType
-from mysql.connector import connect, Error
+# from mysql.connector import connect, Error
 from Trading_Schedule.fx_schedule import FXSchedule
 
 
@@ -78,7 +78,7 @@ class TradingSession:
                     sleep_time = start - cur_time
                     print(sleep_time)
                     time.sleep(sleep_time)
-                self.twsclient.connect("127.0.0.1", 7497, clientId=0)                
+                self.twsclient.connect()                
                 self.twsclient.run()
                 self.price_handler.request_data()
                 self._event_loop(start, end)  
@@ -129,11 +129,11 @@ class TradingSession:
     def _sleep_next_open_day(self):
         day = date.today()
         while self.trading_schedule.calendar.is_holiday(day):
-            day += 1
+            day += timedelta(days=1)
         start, _ = self.trading_schedule.get_trading_hours(day)
         cur_time = time.time()
         sleep_time = start - cur_time
-        print(sleep_time)
+        print("sleep:", sleep_time)
         time.sleep(max(0, sleep_time))
         
         
@@ -169,12 +169,13 @@ events_queue = queue.Queue()
 init_asset_val = 100000
 session_type = SessionType.LIVE
 
-twsclient = TWSClient()
+twsclient = TWSClient("127.0.0.1", 7497, 0)
 
-try:
-    db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
-except Error as e:
-    raise Exception(e)
+# try:
+#     db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
+# except Error as e:
+#     raise Exception(e)
+db_client = None
 
 
 trading_schedule = FXSchedule(2022)

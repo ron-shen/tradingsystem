@@ -7,7 +7,7 @@ Created on Tue Dec  7 20:02:36 2021
 """
 
 from IBTWS.twswrapper import TWSWrapper
-from IBTWS.ibapi.client import EClient
+from ibapi.client import EClient
 from IBTWS.contracts import create_contract
 from Event.event import BarEvent, FillEvent
 import threading
@@ -25,7 +25,7 @@ class TWSClient(TWSWrapper, EClient):
 
     exchange = "SMART"
     
-    def __init__(self):
+    def __init__(self, host, port, client_id):
         TWSWrapper.__init__(self)
         EClient.__init__(self, wrapper=self)
         self.fill_event =  FillEvent(None, None, None, None, None, None, None)
@@ -37,11 +37,14 @@ class TWSClient(TWSWrapper, EClient):
         self.error_code = queue.Queue()
         self.cond = threading.Condition()
         self.time = None
+        self.host = host
+        self.port = port
+        self.client_id = client_id
 
 
-    def connect(self, host, port, clientId=0):    
+    def connect(self):    
         print("Connecting to tws...")
-        super().connect(host, port, clientId)
+        super().connect(self.host, self.port, self.clientId)
         while not self.isConnected():
             pass
 

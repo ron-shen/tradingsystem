@@ -7,12 +7,12 @@ Created on Tue Dec  7 20:05:06 2021
 """
 
 
-from IBTWS.ibapi.wrapper import EWrapper
+from ibapi.wrapper import EWrapper
 import datetime
 from Event.event import Direction
 from copy import deepcopy
 from common import Bar, Error
-from IBTWS.ibapi.common import TickerId, TickAttrib
+from ibapi.common import TickerId, TickAttrib
 from decimal import Decimal
 from ibapi.ticktype import * # @UnusedWildImport
 import time
