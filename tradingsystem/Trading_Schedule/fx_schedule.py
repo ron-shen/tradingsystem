@@ -28,13 +28,6 @@ class FXSchedule(BaseSchedule):
             if 5 <= d.isoweekday() <= 6:
                 self.calendar.add_holiday(d)
             d += timedelta(days=1)
-        
-        
-
-a = FXSchedule()
-
-a.get_trading_hours(date.today())
-
 
 
     

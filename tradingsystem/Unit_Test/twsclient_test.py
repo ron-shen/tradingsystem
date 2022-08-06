@@ -5,7 +5,7 @@ import unittest
 from IBTWS.twsclient import TWSClient
 from Event.event import BarEvent
 from common import Bar
-from IBTWS.ibapi.common import BarData
+from ibapi.common import BarData
 from threading import Condition
 
 
@@ -26,13 +26,12 @@ class TestTWSClient(unittest.TestCase):
     #test the fuctions in twsclient and twswrapper
     def setUp(self):
         self.lastest_bar_event = queue.Queue()
-        self.twsclient = TWSClient()
+        self.twsclient = TWSClient("127.0.0.1", 7497, 0)
         self.twsclient.last_bar_time = 0 
         self.twsclient._bars = {0: BarEvent(None, "AAPL", None, -1, 999999, None, 0 )}
         self.twsclient.lastest_bar_event = queue.Queue()
         self.twsclient.timeframe = 60
         self.twsclient.realtime_subscribed = False
-        self.twsclient.mkt_close = time(20,0)
         
         self.bar_stream = []
         self.bar_stream.append(Bar(1644662475, 1644662480, 2, 4, 2, 3, 100, -1, -1))
@@ -199,9 +198,20 @@ class TestTWSClient(unittest.TestCase):
         expected_bar = BarEvent(1644662595, "AAPL", 11, 18, 14, None, 100)
         self.assertEqual(aapl_bar, expected_bar)
      
-        
-        
 
+    def test_construct_bar_end(self):
+        """
+        test if the bar is constructed when market ends.
+        """
+        self.twsclient.end_time = 1644662530
+        self.twsclient.lastest_bar_event = queue.Queue()
+        self.bar_stream.pop()
+        for i in range(len(self.bar_stream)):
+            self.twsclient._construct_bar(0, self.bar_stream[i])
+
+        self.assertEqual(self.twsclient.lastest_bar_event.qsize(), 1)
+
+        
 
 
 if __name__ == '__main__':

@@ -40,6 +40,7 @@ class TWSClient(TWSWrapper, EClient):
         self.host = host
         self.port = port
         self.client_id = client_id
+        self.end_time = None
 
 
     def connect(self):    
@@ -159,7 +160,7 @@ class TWSClient(TWSWrapper, EClient):
             bar.volume += current_bar.volume
             
         #5 seconds bars are enough to create a bar with defined timeframe
-        if (current_bar.end_time - bar.timestamp) >= self.timeframe:
+        if (current_bar.end_time - bar.timestamp) >= self.timeframe or current_bar.end_time == self.end_time:
             # if(current_bar.end_time - bar.timestamp) > self.timeframe:
             #     print("there are 5sec bars missing in this bar")                
             bar.close_price = current_bar.close_price        

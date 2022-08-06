@@ -18,7 +18,7 @@ from Strategy.macdrsi import MACDRSI
 import time
 from datetime import datetime, timezone, date, timedelta
 from common import SessionType
-# from mysql.connector import connect, Error
+from mysql.connector import connect, Error
 from Trading_Schedule.fx_schedule import FXSchedule
 
 
@@ -35,13 +35,7 @@ class TradingSession:
         ):
         """
         TODO
-        1. now we have to set market open and close time manually, 
-           it is better to generate the time automatically
-        2. Now if there are public holidays in weekday, the program will
-           still run, it shoud make a trading schedule which has a list of the
-           publich holidays and trading hours each day 
-        3. Now it only supports UTC time, it should support other time zones
-
+        Now it only supports UTC time, it should support other time zones
         """
         self.strategy = strategy
         self.events_queue = events_queue
@@ -76,19 +70,21 @@ class TradingSession:
                 cur_time = time.time()
                 if cur_time < start:
                     sleep_time = start - cur_time
-                    print(sleep_time)
+                    print(f"sleep {sleep_time} until market opens...")
                     time.sleep(sleep_time)
+                self.twsclient.end_time = end
                 self.twsclient.connect()                
                 self.twsclient.run()
                 self.price_handler.request_data()
                 self._event_loop(start, end)  
-                                           
+                                        
             self._reset()       
             self._sleep_next_open_day()
 
 
     def _event_loop(self, start, end):
-        while start <= time.time() <= end:
+
+        while start <= time.time() <= end + 10:
             self.price_handler.get_next()
             self.price_handler.check_bar_interruption()
             self.broker.get_fill_event()
@@ -133,7 +129,7 @@ class TradingSession:
         start, _ = self.trading_schedule.get_trading_hours(day)
         cur_time = time.time()
         sleep_time = start - cur_time
-        print("sleep:", sleep_time)
+        print(f"sleep {sleep_time} until market opens...")
         time.sleep(max(0, sleep_time))
         
         
