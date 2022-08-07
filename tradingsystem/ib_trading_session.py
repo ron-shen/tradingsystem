@@ -62,7 +62,7 @@ class TradingSession:
             raise Exception("invalid trading period, trading_end is less than current time!")
         
         while time.time() <= self.trading_end:
-            today = date.today()            
+            today = datetime.utcnow().date()      
             if not self.trading_schedule.calendar.is_holiday(today):
                 start, end = self.trading_schedule.get_trading_hours(today)
                 print("start: ", start)
@@ -83,7 +83,6 @@ class TradingSession:
 
 
     def _event_loop(self, start, end):
-
         while start <= time.time() <= end + 10:
             self.price_handler.get_next()
             self.price_handler.check_bar_interruption()
@@ -123,7 +122,7 @@ class TradingSession:
          
          
     def _sleep_next_open_day(self):
-        day = date.today()
+        day = datetime.utcnow().date()
         while self.trading_schedule.calendar.is_holiday(day):
             day += timedelta(days=1)
         start, _ = self.trading_schedule.get_trading_hours(day)
@@ -161,12 +160,9 @@ class TradingSession:
 #set up     
 events_queue = queue.Queue()       
 
-
 init_asset_val = 100000
 session_type = SessionType.LIVE
-
 twsclient = TWSClient("127.0.0.1", 7497, 0)
-twsclient.connect()
 # try:
 #     db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
 # except Error as e:
