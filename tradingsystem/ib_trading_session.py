@@ -166,7 +166,7 @@ init_asset_val = 100000
 session_type = SessionType.LIVE
 
 twsclient = TWSClient("127.0.0.1", 7497, 0)
-
+twsclient.connect()
 # try:
 #     db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
 # except Error as e:

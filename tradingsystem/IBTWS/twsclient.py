@@ -45,7 +45,7 @@ class TWSClient(TWSWrapper, EClient):
 
     def connect(self):    
         print("Connecting to tws...")
-        super().connect(self.host, self.port, self.clientId)
+        super().connect(self.host, self.port, self.client_id)
         while not self.isConnected():
             pass
 
