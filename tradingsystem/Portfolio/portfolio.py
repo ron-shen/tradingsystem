@@ -122,10 +122,11 @@ class Portfolio:
         return False
         
     def save_to_db(self, time):
-        query = ("INSERT INTO Portfolio (Datetime, Cash, MarketValue, AssetValue)"
-                "VALUES (%s, %s, %s, %s)"
-        )
-        data = (time, self.cash, float(self.market_value), float(self.get_asset_val()))
-        cursor = self.db_client.cursor()
-        cursor.execute(query, data)
-        self.db_client.commit()         
+        if self.db_client is not None:
+            query = ("INSERT INTO Portfolio (Datetime, Cash, MarketValue, AssetValue)"
+                    "VALUES (%s, %s, %s, %s)"
+            )
+            data = (time, self.cash, float(self.market_value), float(self.get_asset_val()))
+            cursor = self.db_client.cursor()
+            cursor.execute(query, data)
+            self.db_client.commit()         

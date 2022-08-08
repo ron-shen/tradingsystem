@@ -83,6 +83,9 @@ class TradingSession:
 
 
     def _event_loop(self, start, end):
+        """
+        end + 10: give some time to get the last data
+        """
         while start <= time.time() <= end + 10:
             self.price_handler.get_next()
             self.price_handler.check_bar_interruption()
