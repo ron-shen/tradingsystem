@@ -25,7 +25,7 @@ class TWSClient(TWSWrapper, EClient):
 
     exchange = "SMART"
     
-    def __init__(self, host, port, client_id):
+    def __init__(self, ip, port_num, client_id):
         TWSWrapper.__init__(self)
         EClient.__init__(self, wrapper=self)
         self.fill_event =  FillEvent(None, None, None, None, None, None, None)
@@ -37,15 +37,15 @@ class TWSClient(TWSWrapper, EClient):
         self.error_code = queue.Queue()
         self.cond = threading.Condition()
         self.time = None
-        self.host = host
-        self.port = port
+        self.ip = ip
+        self.port_num = port_num
         self.client_id = client_id
         self.end_time = None
 
 
     def connect(self):    
         print("Connecting to tws...")
-        super().connect(self.host, self.port, self.client_id)
+        super().connect(self.ip, self.port_num, self.client_id)
         while not self.isConnected():
             pass
 
