@@ -37,7 +37,7 @@ trading_session.start_trading()
 ```
 
 For live trading in IB,
-1. Ppen Trader Workstation (TWS) or IB Gateway
+1. Open Trader Workstation (TWS) or IB Gateway
 2. Change timezone to UTC in options
 3. Run the code below
 ```
