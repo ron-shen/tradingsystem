@@ -4,11 +4,11 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 """
 
 
-from ibapi import comm
-from ibapi.common import UNSET_DOUBLE
-from ibapi.object_implem import Object
-from ibapi.enum_implem import Enum
-from ibapi.utils import decode
+from . import comm
+from .common import UNSET_DOUBLE
+from .object_implem import Object
+from .enum_implem import Enum
+from .utils import decode
 
 #TODO: add support for Rebate, P/L, ShortableShares conditions 
 

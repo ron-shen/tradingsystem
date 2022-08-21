@@ -6,7 +6,7 @@ Created on Sat Nov 13 19:32:15 2021
 @author: ron
 """
 
-from Technical_Indicator.base import AbstractTechnicalIndicator
+from .base import AbstractTechnicalIndicator
 from collections import deque
 import numpy as np
 

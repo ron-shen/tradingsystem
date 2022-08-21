@@ -8,7 +8,7 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 TickType type
 """
 
-from ibapi.enum_implem import Enum
+from .enum_implem import Enum
 
 
 # TickType

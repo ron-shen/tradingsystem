@@ -5,10 +5,10 @@ Created on Tue Dec 14 14:43:25 2021
 
 @author: ron
 """
-from Data_Handler.base import AbstractDataHandler
+from .base import AbstractDataHandler
 import queue
 import time
-from common import check_ping
+from ..common import check_ping
 
 
 

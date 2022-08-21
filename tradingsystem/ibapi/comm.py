@@ -13,10 +13,10 @@ import struct
 import logging
 import sys
 
-from ibapi.common import UNSET_INTEGER, UNSET_DOUBLE
-from ibapi.utils import ClientException
-from ibapi.utils import isAsciiPrintable
-from ibapi.errors import INVALID_SYMBOL
+from .common import UNSET_INTEGER, UNSET_DOUBLE
+from .utils import ClientException
+from .utils import isAsciiPrintable
+from .errors import INVALID_SYMBOL
 
 logger = logging.getLogger(__name__)
 

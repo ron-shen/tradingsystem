@@ -6,10 +6,10 @@ Created on Tue Dec  7 20:02:36 2021
 @author: ron
 """
 
-from IBTWS.twswrapper import TWSWrapper
-from ibapi.client import EClient
-from IBTWS.contracts import create_contract
-from Event.event import BarEvent, FillEvent
+from .twswrapper import TWSWrapper
+from ..ibapi.client import EClient
+from .contracts import create_contract
+from ..event.event import BarEvent, FillEvent
 import threading
 from time import sleep
 import queue
@@ -89,7 +89,7 @@ class TWSClient(TWSWrapper, EClient):
     def reqRealTimeBars(self):
         #reqRealTimeBars returns bar in every 5 seconds
         #these 5 second bars are then constructed into bar with defined timeframe by calling _construct_bar()
-        #then it puts it into latest_bar_event queue which Data Handler can get the latest Bar Event
+        #then it puts it into latest_bar_event queue which Data Handler can get the latest Bar event
         with self.cond:
             print("Wait until first real time bar return...")
             for i in range(len(self.contracts_list)):

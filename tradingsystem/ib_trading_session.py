@@ -6,20 +6,10 @@ Created on Sat Dec 18 19:32:03 2021
 @author: ron
 """
 import queue
-from Event.event import EventType
-from Data_Handler.ib_real_time import IBRealTimeBarHandler
-from Strategy.sma_crossover import SMACrossover
-from Order_Handler.max_order_handler import MaxOrderHandler
-from Portfolio.portfolio import Portfolio
-from Broker_Handler.ib_broker import IBBroker
-from Statistics.statistics import Statistics
-from IBTWS.twsclient import TWSClient
-from Strategy.macdrsi import MACDRSI
+from .event.event import EventType
 import time
-from datetime import datetime, timezone, date, timedelta
-from common import SessionType
-from mysql.connector import connect, Error
-from Trading_Schedule.fx_schedule import FXSchedule
+from datetime import datetime, timezone, timedelta
+
 
 
 class TradingSession:
@@ -59,7 +49,7 @@ class TradingSession:
         emptied.
         """
         if self.trading_end < time.time():
-            raise Exception("invalid trading period, trading_end is less than current time!")
+            raise ValueError("invalid trading period, trading_end is less than current time!")
         
         while time.time() <= self.trading_end:
             today = datetime.utcnow().date()      
@@ -70,7 +60,7 @@ class TradingSession:
                 cur_time = time.time()
                 if cur_time < start:
                     sleep_time = start - cur_time
-                    print(f"sleep {sleep_time} until market opens...")
+                    print(f"sleep {sleep_time} to trade...")
                     time.sleep(sleep_time)
                 self.twsclient.end_time = end
                 self.twsclient.connect()                
@@ -131,7 +121,7 @@ class TradingSession:
         start, _ = self.trading_schedule.get_trading_hours(day)
         cur_time = time.time()
         sleep_time = start - cur_time
-        print(f"sleep {sleep_time} until market opens...")
+        print(f"sleep {sleep_time} to trade...")
         time.sleep(max(0, sleep_time))
         
         
@@ -160,44 +150,6 @@ class TradingSession:
         print("Trading ends")
         self.statistics.plot_results()
 
-#set up     
-events_queue = queue.Queue()       
-
-init_asset_val = 100000
-session_type = SessionType.LIVE
-twsclient = TWSClient("127.0.0.1", 7497, 0)
-# try:
-#     db_client = connect(host = "127.0.0.1", user = "root", password = "password", database="tradingsystem")
-# except Error as e:
-#     raise Exception(e)
-db_client = None
-
-
-trading_schedule = FXSchedule(2022)
-#symbol_list = ['AMZN']
-symbol_list = ['USD/JPY']
-
-
-ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 300, 
-                                      "MIDPOINT", True, events_queue, 
-                                      db_client)
-
-portfolio = Portfolio(init_asset_val, db_client)
-max_order_handler = MaxOrderHandler(portfolio, events_queue, session_type, db_client)
-
-sma_crossover = SMACrossover(symbol_list, 10, 20, events_queue, session_type, portfolio)
-macdrsi = MACDRSI(symbol_list, 12, 26, 9, 14, events_queue, session_type, portfolio, db_client)
-
-ib_broker = IBBroker(twsclient, events_queue, symbol_list, db_client)
-
-stat = Statistics(init_asset_val)
-
-trading_end = datetime(2022,12,21, 0, 00)
-trading_session = TradingSession(twsclient, ib_bar_handler, sma_crossover, portfolio, 
-                                 max_order_handler, ib_broker, events_queue, 
-                                 trading_schedule, trading_end, stat)
-
-trading_session.start_trading()
 
 
 

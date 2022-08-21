@@ -1,10 +1,7 @@
-#import datetime
-#import os
 import pandas as pd
 import numpy as np
 from math import sqrt
 import matplotlib.pyplot as plt
-#import seaborn as sns
 
 
 class Statistics:

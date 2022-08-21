@@ -6,7 +6,7 @@ Created on Tue Nov 16 20:16:45 2021
 @author: ron
 """
 
-from Technical_Indicator.base import AbstractTechnicalIndicator
+from .base import AbstractTechnicalIndicator
 
 
 class RSI(AbstractTechnicalIndicator):

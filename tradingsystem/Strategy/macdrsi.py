@@ -1,8 +1,8 @@
-from Strategy.base import AbstractStrategy
-from Technical_Indicator.macd import MACD
-from Technical_Indicator.rsi import RSI
-from Event.event import SignalEvent, OrderType, Direction
-from common import get_cur_time
+from .base import AbstractStrategy
+from ..technical_indicators.macd import MACD
+from ..technical_indicators.rsi import RSI
+from ..event.event import SignalEvent, OrderType, Direction
+from ..common import get_cur_time
 from enum import Enum
 from datetime import datetime, timezone
 

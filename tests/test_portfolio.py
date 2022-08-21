@@ -7,8 +7,8 @@ Created on Sat Nov 27 15:27:07 2021
 """
 
 import unittest
-from Event.event import BarEvent, FillEvent, Direction
-from Portfolio.portfolio import Portfolio
+from tradingsystem.event.event import BarEvent, FillEvent, Direction
+from tradingsystem.portfolio.portfolio import Portfolio
 from datetime import datetime
 
 
@@ -37,9 +37,9 @@ class TestPortfolio(unittest.TestCase):
         fillevent = FillEvent(self.date_time, 'GOOG', Direction.SHORT, 'NASDAQ', 3500, 3, 1)
         self.portfolio.on_fill(fillevent)
         
-        self.assertEqual(self.portfolio.cash, 14000)
+        self.assertEqual(self.portfolio.cash, 13996)
         self.assertEqual(self.portfolio.market_value, 3500)
-        self.assertEqual(self.portfolio.get_asset_val(), 17500)
+        self.assertEqual(self.portfolio.get_asset_val(), 17496)
         self.assertEqual(goog.loc['GOOG']['POS'], 1)
         self.assertEqual(goog.loc['GOOG']['AVG_PRICE'], 2125)
         self.assertEqual(goog.loc['GOOG']['MKT_VAL'], 3500)
@@ -66,9 +66,9 @@ class TestPortfolio(unittest.TestCase):
         fillevent = FillEvent(self.date_time, 'GOOG', Direction.LONG, 'NASDAQ', 3500, 3, 1)
         self.portfolio.on_fill(fillevent)
         
-        self.assertEqual(self.portfolio.cash, 12500)
+        self.assertEqual(self.portfolio.cash, 12496)
         self.assertEqual(self.portfolio.market_value, -7000)
-        self.assertEqual(self.portfolio.get_asset_val(), 5500)     
+        self.assertEqual(self.portfolio.get_asset_val(), 5496)     
         self.assertEqual(goog.loc['GOOG']['POS'], -2)
         self.assertEqual(goog.loc['GOOG']['AVG_PRICE'], 2200)
         self.assertEqual(goog.loc['GOOG']['MKT_VAL'], -7000)
@@ -95,9 +95,9 @@ class TestPortfolio(unittest.TestCase):
         self.assertEqual(goog.loc['GOOG']['MKT_VAL'], 7500)
         self.assertEqual(goog.loc['GOOG']['RLZD_P'], 0)
         self.assertEqual(goog.loc['GOOG']['UNRLZD_P'], -2500)    
-        self.assertEqual(self.portfolio.cash, 0)
+        self.assertEqual(self.portfolio.cash, -1)
         self.assertEqual(self.portfolio.market_value, 7500)
-        self.assertEqual(self.portfolio.get_asset_val(), 7500)
+        self.assertEqual(self.portfolio.get_asset_val(), 7499)
      
         
     def test_on_bar_short(self):
@@ -119,9 +119,9 @@ class TestPortfolio(unittest.TestCase):
         self.assertEqual(goog.loc['GOOG']['MKT_VAL'], -12000)
         self.assertEqual(goog.loc['GOOG']['RLZD_P'], 0)
         self.assertEqual(goog.loc['GOOG']['UNRLZD_P'], -4000)    
-        self.assertEqual(self.portfolio.cash, 18000)
+        self.assertEqual(self.portfolio.cash, 17999)
         self.assertEqual(self.portfolio.market_value, -12000)
-        self.assertEqual(self.portfolio.get_asset_val(), 6000)
+        self.assertEqual(self.portfolio.get_asset_val(), 5999)
                
 
         

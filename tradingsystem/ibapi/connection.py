@@ -14,7 +14,8 @@ import socket
 import threading
 import logging
 import sys
-
+from .errors import FAIL_CREATE_SOCK, CONNECT_FAIL
+from .common import NO_VALID_ID
 
 #TODO: support SSL !!
 

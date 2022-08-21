@@ -6,8 +6,8 @@ Created on Sat Nov 20 15:16:52 2021
 @author: ron
 """
 
-from Technical_Indicator.base import AbstractTechnicalIndicator
-from Technical_Indicator.ema import EMA
+from .base import AbstractTechnicalIndicator
+from .ema import EMA
 
 
 class MACD(AbstractTechnicalIndicator):

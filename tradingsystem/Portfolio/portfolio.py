@@ -1,6 +1,5 @@
 import pandas as pd
-from Event.event import Direction
-from datetime import datetime, timezone
+from ..event.event import Direction
 
 
 class Portfolio:
@@ -57,7 +56,8 @@ class Portfolio:
         fin_instr = [fill_event.quantity, fill_event.price, market_value, 0, 0]
         self.fin_instruments.loc[fill_event.ticker] = fin_instr
         self.market_value += market_value
-        self.cash -= market_value
+        #self.cash -= market_value
+        self.cash = self.cash - market_value - fill_event.commission
 
 
     def _modify_fin_instr(self, fill_event):
@@ -75,7 +75,9 @@ class Portfolio:
                 fin_instr.RLZD_P += (fin_instr.AVG_PRICE - fill_event.price) * fill_event.quantity                                   
 
             fin_instr.POS += fill_event.quantity                        
-            self.cash -= fill_event.quantity * fill_event.price
+            #self.cash -= fill_event.quantity * fill_event.price
+            self.cash = self.cash - fill_event.quantity * fill_event.price - fill_event.commission
+            #self.cash -= fill_event.commission
 
         #fill_event.direction == Direction.SHORT:    
         else:
@@ -88,8 +90,10 @@ class Portfolio:
                 total_cost = -fin_instr.POS * fin_instr.AVG_PRICE + fill_event.quantity * fill_event.price                  
                 fin_instr.AVG_PRICE = total_cost / (-fin_instr.POS + fill_event.quantity)
 
-            fin_instr.POS -= fill_event.quantity
-            self.cash += fill_event.quantity * fill_event.price
+            fin_instr.POS -= fill_event.quantity  
+            #self.cash += fill_event.quantity * fill_event.price
+            self.cash = self.cash + fill_event.quantity * fill_event.price - fill_event.commission
+            #self.cash -= fill_event.commission
 
         fin_instr.UNRLZD_P = (fill_event.price - fin_instr.AVG_PRICE) * fin_instr.POS
         fin_instr.MKT_VAL = fin_instr.POS * fill_event.price

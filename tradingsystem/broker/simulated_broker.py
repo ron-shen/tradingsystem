@@ -1,5 +1,5 @@
-from Broker_Handler.base import AbstractBroker
-from Event.event import FillEvent, OrderType
+from .base import AbstractBroker
+from ..event.event import FillEvent, OrderType
 
 class IBSimulatedBroker(AbstractBroker):
     """

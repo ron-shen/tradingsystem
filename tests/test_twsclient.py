@@ -1,12 +1,10 @@
-from ast import Pass
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 import queue
 import unittest
-from IBTWS.twsclient import TWSClient
-from Event.event import BarEvent
-from common import Bar
-from ibapi.common import BarData
-from threading import Condition
+from tradingsystem.ibtws.twsclient import TWSClient
+from tradingsystem.event.event import BarEvent
+from tradingsystem.common import Bar
+from tradingsystem.ibapi.common import BarData
 
 
 def construct_BarData(time, open, high, low, close, volume, wap, count):

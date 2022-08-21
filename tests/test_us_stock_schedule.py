@@ -1,14 +1,15 @@
+
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Sun Nov 28 12:51:56 2021
-
 @author: ron
 """
 import unittest
 from datetime import date, time
-from Trading_Schedule.us_stock_schedule import USStockSchedule
-from Calendar.calendar import Calendlar
+from tradingsystem.trading_schedule.us_stock_schedule import USStockSchedule
+from tradingsystem.calendar.calendar import Calendlar
 
 
 class MockUSStockSchedule(USStockSchedule):
@@ -144,6 +145,4 @@ class TestUSStockSchedule(unittest.TestCase):
         
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)     
-        
-        
+    unittest.main(verbosity=2)  

@@ -5,13 +5,12 @@ Created on Mon Nov 22 20:12:56 2021
 
 @author: ron
 """
-
 import unittest
-from Event.event import BarEvent, SignalEvent, OrderEvent, FillEvent, OrderType, EventType, Direction
+from tradingsystem.event.event import BarEvent, SignalEvent, OrderEvent, FillEvent, OrderType, EventType, Direction
 from datetime import datetime
 
 
-class TestIndicators(unittest.TestCase):
+class TestEvent(unittest.TestCase):
     
     def setUp(self):
         self.date_time = datetime(2021, 11, 5, 15, 30, 20)

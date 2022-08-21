@@ -4,9 +4,9 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 """
 
 
-from ibapi.common import UNSET_INTEGER, UNSET_DOUBLE, UNSET_DECIMAL
-from ibapi.object_implem import Object
-from ibapi.softdollartier import SoftDollarTier
+from .common import UNSET_INTEGER, UNSET_DOUBLE, UNSET_DECIMAL
+from .object_implem import Object
+from .softdollartier import SoftDollarTier
 
 # enum Origin
 (CUSTOMER, FIRM, UNKNOWN) = range(3)

@@ -6,9 +6,7 @@ Created on Tue Oct 26 20:06:59 2021
 @author: ron
 """
 import unittest
-from Portfolio.portfolio import Portfolio
-from Statistics.statistics import Statistics
-from Event.event import BarEvent
+from tradingsystem.statistics.statistics import Statistics
 from datetime import datetime, timedelta
 
 class TestStatistics(unittest.TestCase):

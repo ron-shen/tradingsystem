@@ -14,7 +14,7 @@ import logging
 import inspect
 
 from decimal import Decimal
-from ibapi.common import UNSET_INTEGER, UNSET_DOUBLE, UNSET_LONG, UNSET_DECIMAL
+from .common import UNSET_INTEGER, UNSET_DOUBLE, UNSET_LONG, UNSET_DECIMAL
 
 
 logger = logging.getLogger(__name__)

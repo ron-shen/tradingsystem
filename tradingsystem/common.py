@@ -37,7 +37,7 @@ class Bar():
         """
         Initialises the BarEvent.
         Parameters:
-        timestamp - The timestamp of the Bar Event generated (i.e. timestamp of a bar)
+        timestamp - The timestamp of the Bar event generated (i.e. timestamp of a bar)
         ticker - The ticker symbol, e.g. 'GOOG'.
         open_price - The opening price of the bar
         high_price - The high price of the bar

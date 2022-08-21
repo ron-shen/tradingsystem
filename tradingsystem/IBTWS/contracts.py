@@ -3,16 +3,28 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
  and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable.
 """
 
-from ibapi.contract import * # @UnusedWildImport
+from ..ibapi.contract import * # @UnusedWildImport
 
-fx_pair = {"USD/JPY", "USD/EUR"}
+fx_pair = {"EUR/USD", "GBP/USD"}
 
 def create_contract(symbol):
-    if symbol in fx_pair:
-        pair = symbol.split("/")
-        base = pair[0]
-        quote = pair[1]
-        return Contracts.FXContract(base, quote)   
+    """
+    TODO: support other currencies in the future 
+          now it only supports forex pairs that USD is a quote currency
+          becuase now it uses USD as base currency in the portfolio calculation
+    """
+    #fx pair
+    if len(symbol) == 7:
+        if symbol in fx_pair:
+            pair = symbol.split("/")
+            base = pair[0]
+            quote = pair[1]
+            return Contracts.FXContract(base, quote)
+        else:
+            msg = (f"{symbol} is not supported. Supported currencies are {fx_pair}. "
+                   f"Now it only supports forex pairs with USD as a quote currency becuase it uses USD as base currency in the portfolio calculation."
+            )
+            raise ValueError(msg)
     #a stock
     else:
         return Contracts.USStock(symbol)

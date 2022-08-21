@@ -16,7 +16,7 @@ from threading import Thread
 #import threading
 
 
-from ibapi import comm
+from . import comm
 
 
 logger = logging.getLogger(__name__)

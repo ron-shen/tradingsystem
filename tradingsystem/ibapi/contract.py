@@ -10,11 +10,11 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 	CLOSE_POS   = close
 	UNKNOWN_POS = unknown
 """
-import ibapi
+from . import utils
 
 from decimal import Decimal
-from ibapi.object_implem import Object
-from ibapi.common import UNSET_DECIMAL
+from .object_implem import Object
+from .common import UNSET_DECIMAL
 
 
 (SAME_POS, OPEN_POS, CLOSE_POS, UNKNOWN_POS) = range(4)
@@ -26,7 +26,7 @@ class ComboLeg(Object):
         self.ratio = 0  # type: int
         self.action = ""      # BUY/SELL/SSHORT
         self.exchange = ""
-        self.openClose = 0   # type: int; LegOpenClose enum values
+        self.openClose = 0
         # for stock legs when doing short sale
         self.shortSaleSlot = 0
         self.designatedLocation = ""
@@ -77,8 +77,8 @@ class Contract(Object):
         self.secId = ""
 
         #combos
-        self.comboLegsDescrip = ""  # type: str; received in open order 14 and up for all combos
-        self.comboLegs = None     # type: list<ComboLeg>
+        self.comboLegsDescrip = "" 
+        self.comboLegs = None
         self.deltaNeutralContract = None
 
 
@@ -199,9 +199,9 @@ class ContractDetails(Object):
             str(self.nextOptionType),
             str(self.nextOptionPartial),
             str(self.notes),
-            ibapi.utils.decimalMaxString(self.minSize),
-            ibapi.utils.decimalMaxString(self.sizeIncrement),
-            ibapi.utils.decimalMaxString(self.suggestedSizeIncrement)))
+            utils.decimalMaxString(self.minSize),
+            utils.decimalMaxString(self.sizeIncrement),
+            utils.decimalMaxString(self.suggestedSizeIncrement)))
             
         return s
 
@@ -209,6 +209,6 @@ class ContractDetails(Object):
 class ContractDescription(Object):
     def __init__(self):
         self.contract = Contract()
-        self.derivativeSecTypes = None   # type: list of strings
+        self.derivativeSecTypes = None
 
 

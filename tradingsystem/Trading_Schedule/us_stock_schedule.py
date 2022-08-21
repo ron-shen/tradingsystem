@@ -1,6 +1,6 @@
 from datetime import datetime, date, timedelta, time, timezone
 import calendar
-from Trading_Schedule.base import BaseSchedule
+from .base import BaseSchedule
 
 class USStockSchedule(BaseSchedule):
     def __init__(self, year=datetime.utcnow().year):

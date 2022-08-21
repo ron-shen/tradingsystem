@@ -1,6 +1,6 @@
-from Order_Handler.base import AbstractOrderHandler
-from Event.event import OrderType, OrderEvent
-from common import get_cur_time
+from .base import AbstractOrderHandler
+from ..event.event import OrderType, OrderEvent
+from ..common import get_cur_time
 import math
 
 
@@ -29,6 +29,10 @@ class MaxOrderHandler(AbstractOrderHandler):
                 
             elif signal_event.order_type == OrderType.LIMIT:
                 quantity = math.floor(self.portfolio.cash / signal_event.entry_price)
+            
+            if quantity <= 0:
+                print("order rejected due to cash not enough")
+                return
             
         cur_time = get_cur_time(signal_event, self.session_type)
         ticker = signal_event.ticker

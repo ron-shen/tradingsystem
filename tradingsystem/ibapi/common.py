@@ -4,11 +4,9 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
 """
 
 import sys
-import ibapi
-
 from decimal import Decimal
-from ibapi.enum_implem import Enum
-from ibapi.object_implem import Object
+from .enum_implem import Enum
+from .object_implem import Object
 
 
 NO_VALID_ID = -1
@@ -60,7 +58,7 @@ class BarData(Object):
 
     def __str__(self):
         return "Date: %s, Open: %f, High: %f, Low: %f, Close: %f, Volume: %s, WAP: %s, BarCount: %d" % (self.date, self.open, self.high,
-            self.low, self.close, ibapi.utils.decimalMaxString(self.volume), ibapi.utils.decimalMaxString(self.wap), self.barCount)
+            self.low, self.close, self.volume, self.wap, self.barCount)
 
 
 class RealTimeBar(Object):
@@ -77,7 +75,7 @@ class RealTimeBar(Object):
 
     def __str__(self):
         return "Time: %d, Open: %f, High: %f, Low: %f, Close: %f, Volume: %s, WAP: %s, Count: %d" % (self.time, self.open_, self.high,
-            self.low, self.close, ibapi.utils.decimalMaxString(self.volume), ibapi.utils.decimalMaxString(self.wap), self.count)
+            self.low, self.close, self.volume, self.wap, self.count)
 
 
 class HistogramData(Object):
@@ -86,7 +84,7 @@ class HistogramData(Object):
         self.size = UNSET_DECIMAL
 
     def __str__(self):
-        return "Price: %f, Size: %s" % (self.price, ibapi.utils.decimalMaxString(self.size))
+        return "Price: %f, Size: %s" % (self.price, self.size)
 
 
 class NewsProvider(Object):
@@ -177,7 +175,7 @@ class HistoricalTick(Object):
         self.size = UNSET_DECIMAL
 
     def __str__(self):
-        return "Time: %d, Price: %f, Size: %s" % (self.time, self.price, ibapi.utils.decimalMaxString(self.size))
+        return "Time: %d, Price: %f, Size: %s" % (self.time, self.price, self.size)
 
 
 class HistoricalTickBidAsk(Object):
@@ -190,7 +188,7 @@ class HistoricalTickBidAsk(Object):
         self.sizeAsk = UNSET_DECIMAL
 
     def __str__(self):
-        return "Time: %d, TickAttriBidAsk: %s, PriceBid: %f, PriceAsk: %f, SizeBid: %s, SizeAsk: %s" % (self.time, self.tickAttribBidAsk, self.priceBid, self.priceAsk, ibapi.utils.decimalMaxString(self.sizeBid), ibapi.utils.decimalMaxString(self.sizeAsk))
+        return "Time: %d, TickAttriBidAsk: %s, PriceBid: %f, PriceAsk: %f, SizeBid: %s, SizeAsk: %s" % (self.time, self.tickAttribBidAsk, self.priceBid, self.priceAsk, self.sizeBid, self.sizeAsk)
 
 
 class HistoricalTickLast(Object):
@@ -203,6 +201,6 @@ class HistoricalTickLast(Object):
         self.specialConditions = ""
 
     def __str__(self):
-        return "Time: %d, TickAttribLast: %s, Price: %f, Size: %s, Exchange: %s, SpecialConditions: %s" % (self.time, self.tickAttribLast, self.price, ibapi.utils.decimalMaxString(self.size), self.exchange, self.specialConditions)
+        return "Time: %d, TickAttribLast: %s, Price: %f, Size: %s, Exchange: %s, SpecialConditions: %s" % (self.time, self.tickAttribLast, self.price, self.size, self.exchange, self.specialConditions)
 
 

@@ -5,9 +5,9 @@ OrderType = Enum("OrderType", "MARKET LIMIT")
 Direction = Enum("Direction", "LONG SHORT")
 
 
-class Event:
+class event:
     """
-    Event is base class providing an interface for all subsequent
+    event is base class providing an interface for all subsequent
     (inherited) events, that will trigger further events in the
     trading infrastructure.
     """
@@ -16,7 +16,7 @@ class Event:
         return self.type.name
 
 
-class BarEvent(Event):
+class BarEvent(event):
     """
     Created by a DataHandler object.
     This is received by a Strategy object and Portfolio and acted upon.
@@ -29,7 +29,7 @@ class BarEvent(Event):
         """
         Initialises the BarEvent.
         Parameters:
-        timestamp - The timestamp of the Bar Event generated (i.e. timestamp of a bar)
+        timestamp - The timestamp of the Bar event generated (i.e. timestamp of a bar)
         ticker - The ticker symbol, e.g. 'GOOG'.
         open_price - The opening price of the bar
         high_price - The high price of the bar
@@ -67,7 +67,7 @@ class BarEvent(Event):
 
 
 
-class SignalEvent(Event):
+class SignalEvent(event):
     """
     Created by a Strategy object.
     This is received by a Portfolio object and acted upon.
@@ -111,7 +111,7 @@ class SignalEvent(Event):
         
 
 
-class OrderEvent(Event):
+class OrderEvent(event):
     """
     Created by a Portfolio object.
     This is received by a Broker object and acted upon.
@@ -152,7 +152,7 @@ class OrderEvent(Event):
         return str(self)
 
 
-class FillEvent(Event):
+class FillEvent(event):
     """
     Created by a Broker object.
     This is received by a Portfolio object to update the portfolio

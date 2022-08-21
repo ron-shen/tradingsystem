@@ -6,20 +6,7 @@ Created on Fri Oct 29 18:22:08 2021
 @author: ron
 """
 import queue
-from Event.event import EventType
-from Data_Handler.historical_bar_handler import HistoricalBarHandler, get_data_from_yahoo_finance, get_data_from_csv
-from Strategy.sma_crossover import SMACrossover
-from Strategy.bb import BollingerBands
-from Strategy.rsi import RelativeStrengthIndex
-from Strategy.macd import MACDCrossover
-from Strategy.ema_crossover import EMACrossover
-from Strategy.macdrsi import MACDRSI
-from Portfolio.portfolio import Portfolio
-from Order_Handler.max_order_handler import MaxOrderHandler
-from Broker_Handler.simulated_broker import IBSimulatedBroker
-from Statistics.statistics import Statistics
-from common import SessionType
-
+from .event.event import EventType
 
 
 class TradingSession:
@@ -108,39 +95,7 @@ class TradingSession:
         print("Backtest complete.")
         self.statistics.plot_results()
  
-            
-#set up     
-events_queue = queue.Queue()       
 
-init_asset_val = 10000
-
-tickers_data = {}
-amzn5m = get_data_from_csv('./Data/AMZN.csv')
-ticker_list = ['AMZN']
-tickers_data['AMZN'] = amzn5m
-historical_bar_handler = HistoricalBarHandler(tickers_data, events_queue)
-
-
-portfolio = Portfolio(init_asset_val)
-order_handler = MaxOrderHandler(portfolio, events_queue, SessionType.BACKTEST)
-
-sma_crossover = SMACrossover(ticker_list, 10, 20, events_queue, SessionType.BACKTEST, portfolio)
-ema_crossover = EMACrossover(ticker_list, 10, 20, events_queue, SessionType.BACKTEST, portfolio)
-bb = BollingerBands(ticker_list, 20, 2, events_queue, SessionType.BACKTEST, portfolio)
-rsi = RelativeStrengthIndex(ticker_list, 14, events_queue, SessionType.BACKTEST, portfolio)
-macd = MACDCrossover(ticker_list, 12, 26, 9, events_queue, SessionType.BACKTEST, portfolio)
-macdrsi = MACDRSI(ticker_list, 12, 26, 9, 14, events_queue, SessionType.BACKTEST, portfolio)
-
-simulated_broker = IBSimulatedBroker(events_queue, historical_bar_handler)
-
-stat = Statistics(init_asset_val)
-
-trading_session = TradingSession(historical_bar_handler, macdrsi, portfolio, 
-                                 order_handler ,simulated_broker, events_queue, stat)
-
-
-#start backtest
-trading_session.start_trading()
 
 
 

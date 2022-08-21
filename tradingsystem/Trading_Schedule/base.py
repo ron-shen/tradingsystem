@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from Calendar.calendar import Calendlar
+from ..calendar.calendar import Calendlar
 from datetime import date, timedelta
-import time
 
 
 class BaseSchedule(ABC):

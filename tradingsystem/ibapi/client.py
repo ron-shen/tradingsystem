@@ -17,28 +17,23 @@ import logging
 import queue
 import socket
 
-from ibapi import (decoder, reader, comm)
-from ibapi.connection import Connection
-from ibapi.message import OUT
-from ibapi.common import * # @UnusedWildImport
-from ibapi.contract import Contract
-from ibapi.order import Order
-from ibapi.execution import ExecutionFilter
-from ibapi.scanner import ScannerSubscription
-from ibapi.comm import (make_field, make_field_handle_empty)
-from ibapi.utils import (current_fn_name, BadMessage)
-from ibapi.errors import * #@UnusedWildImport
-from ibapi.server_versions import * # @UnusedWildImport
-from ibapi.utils import ClientException
-#import threading
-import time
+from . import (decoder, reader, comm)
+from .connection import Connection
+from .message import OUT
+from .common import * # @UnusedWildImport
+from .contract import Contract
+from .order import Order
+from .execution import ExecutionFilter
+from .scanner import ScannerSubscription
+from .comm import (make_field, make_field_handle_empty)
+from .utils import (current_fn_name, BadMessage)
+from .errors import * #@UnusedWildImport
+from .server_versions import * # @UnusedWildImport
+from .utils import ClientException
 #TODO: use pylint
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# ch = logging.StreamHandler()
-# ch.setLevel(level=logging.DEBUG)
-# logger.addHandler(ch)
+
 
 class EClient(object):
     (DISCONNECTED, CONNECTING, CONNECTED, REDIRECT) = range(4)

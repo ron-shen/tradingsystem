@@ -6,10 +6,10 @@ Created on Sat Nov 13 19:51:56 2021
 @author: ron
 """
 
-from Strategy.base import AbstractStrategy
-from Event.event import SignalEvent, OrderType, Direction
-from Technical_Indicator.bb import BB
-from common import get_cur_time
+from .base import AbstractStrategy
+from ..event.event import SignalEvent, OrderType, Direction
+from ..technical_indicators.bb import BB
+from ..common import get_cur_time
 
 
 class BollingerBands(AbstractStrategy):

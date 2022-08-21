@@ -8,7 +8,7 @@ Simple class mapping a tag to a value. Both of them are strings.
 They are used in a list to convey extra info with the requests.
 """
 
-from ibapi.object_implem import Object
+from .object_implem import Object
 
 
 class TagValue(Object):

@@ -7,11 +7,11 @@ Created on Mon Nov 22 20:12:56 2021
 """
 
 import unittest
-from Technical_Indicator.sma import SMA
-from Technical_Indicator.bb import BB
-from Technical_Indicator.rsi import RSI
-from Technical_Indicator.ema import EMA
-from Technical_Indicator.macd import MACD
+from tradingsystem.technical_indicators.sma import SMA
+from tradingsystem.technical_indicators.bb import BB
+from tradingsystem.technical_indicators.rsi import RSI
+from tradingsystem.technical_indicators.ema import EMA
+from tradingsystem.technical_indicators.macd import MACD
 import talib as ta
 import math
 import yfinance as yf

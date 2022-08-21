@@ -5,10 +5,10 @@ Created on Tue Dec 17 12:46:25 2021
 
 @author: ron
 """
-from Broker_Handler.base import AbstractBroker
-from Event.event import Direction
-from IBTWS.orders import Orders
-from IBTWS.contracts import create_contract
+from .base import AbstractBroker
+from ..event.event import Direction
+from ..ibtws.orders import Orders
+from ..ibtws.contracts import create_contract
 import queue
 import time
 

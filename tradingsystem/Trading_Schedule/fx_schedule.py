@@ -1,6 +1,6 @@
 from datetime import datetime, time, timezone, timedelta, date
-from Trading_Schedule.base import BaseSchedule
-import time as ti
+from .base import BaseSchedule
+
 
 class FXSchedule(BaseSchedule):
     def __init__(self, year=datetime.utcnow().year):

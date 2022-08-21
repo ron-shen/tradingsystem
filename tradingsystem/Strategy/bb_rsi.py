@@ -6,11 +6,11 @@ Created on Sat Nov 17 20:41:09 2021
 @author: ron
 """
 
-from Strategy.base import AbstractStrategy
-from Technical_Indicator.bb import BB
-from Technical_Indicator.rsi import RSI
-from Event.event import SignalEvent, OrderType, Direction
-from common import get_cur_time
+from .base import AbstractStrategy
+from ..technical_indicators.bb import BB
+from ..technical_indicators.rsi import RSI
+from ..event.event import SignalEvent, OrderType, Direction
+from ..common import get_cur_time
 
 
 
@@ -44,7 +44,7 @@ class BBRSI(AbstractStrategy):
         self.session_type = session_type
         
         if stoploss is not None and portfolio_handler is None:
-            raise Exception("portfolio_handler must be set in order to calculate stop loss")
+            raise ValueError("portfolio_handler must be set in order to calculate stop loss")
         else:
             self.stoploss = stoploss
             self.portfolio_handler = portfolio_handler

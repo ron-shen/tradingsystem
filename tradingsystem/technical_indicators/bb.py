@@ -5,8 +5,8 @@ Created on Sun Nov 14 11:36:51 2021
 
 @author: ron
 """
-from Technical_Indicator.base import AbstractTechnicalIndicator
-from Technical_Indicator.sma import SMA
+from .base import AbstractTechnicalIndicator
+from .sma import SMA
 import numpy as np
 
 

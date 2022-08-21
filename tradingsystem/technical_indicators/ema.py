@@ -6,7 +6,7 @@ Created on Sat Nov 20 14:35:19 2021
 @author: ron
 """
 
-from Technical_Indicator.base import AbstractTechnicalIndicator
+from .base import AbstractTechnicalIndicator
 
 
 class EMA(AbstractTechnicalIndicator):

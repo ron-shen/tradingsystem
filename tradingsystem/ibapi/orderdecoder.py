@@ -3,15 +3,15 @@ Copyright (C) 2019 Interactive Brokers LLC. All rights reserved. This code is su
  and conditions of the IB API Non-Commercial License or the IB API Commercial License, as applicable.
 """
 
-from ibapi import order_condition
-from ibapi.object_implem import Object
-from ibapi.utils import * # @UnusedWildImport
-from ibapi.server_versions import * # @UnusedWildImport
-from ibapi.order import OrderComboLeg
-from ibapi.contract import ComboLeg
-from ibapi.tag_value import TagValue
-from ibapi.wrapper import DeltaNeutralContract
-from ibapi.softdollartier import SoftDollarTier
+from . import order_condition
+from .object_implem import Object
+from .utils import * # @UnusedWildImport
+from .server_versions import * # @UnusedWildImport
+from .order import OrderComboLeg
+from .contract import ComboLeg
+from .tag_value import TagValue
+from .wrapper import DeltaNeutralContract
+from .softdollartier import SoftDollarTier
 
 logger = logging.getLogger(__name__)
 
