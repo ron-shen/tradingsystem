@@ -1,10 +1,9 @@
 # TradingSystem
-An Event-driven backtest/realtime quantitative trading system.
+An event-driven backtest/realtime quantitative trading system.
 
 # Installation
 1. create a virtual environment
 2. pip install tradingsystem
-
 
 # Examples
 For backtesting,
@@ -38,9 +37,9 @@ trading_session.start_trading()
 ```
 
 For live trading in IB,
-1. open Trader Workstation (TWS) or IB Gateway
+1. Ppen Trader Workstation (TWS) or IB Gateway
 2. Change timezone to UTC in options
-3. Run the following code
+3. Run the code below
 ```
 import queue
 from tradingsystem.data_handler.ib_real_time import IBRealTimeBarHandler
@@ -57,11 +56,11 @@ from tradingsystem.ib_trading_session import TradingSession
 
 #set up     
 events_queue = queue.Queue()       
-init_asset_val = 10000
+init_asset_val = 10000 #in USD
 session_type = SessionType.LIVE
 twsclient = TWSClient("127.0.0.1", 7497, 0)
 trading_schedule = FXSchedule(2022)
-symbol_list = ['USD/JPY']
+symbol_list = ['EUR/USD']
 ib_bar_handler = IBRealTimeBarHandler(twsclient, symbol_list, 300, 
                                       "MIDPOINT", True, events_queue, 
                                       )
