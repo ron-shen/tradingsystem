@@ -25,8 +25,10 @@ Portfolio
 * Get BarEvents and FillEvents to update the portfolio
 
 # Installation
+```
 1. create a virtual environment
 2. pip install tradingsystem
+```
 
 # Examples
 For backtesting,
