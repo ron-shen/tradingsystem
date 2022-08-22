@@ -3,20 +3,20 @@ An event-driven backtest/realtime quantitative trading system.
 
 # Architecture
 Data Handler 
-*Handle live and historical OHLCV data
-*Generate a BarEvent which contains ticker symbol and OHLCV data
+* Handle live and historical OHLCV data
+* Generate a BarEvent which contains ticker symbol and OHLCV data
 Strategy
-*Get BarEvents and make trading decisions based on predefined rules
-*Generate a SignalEvent which contains order type (market/limit order) and the direction (long/short)
+* Get BarEvents and make trading decisions based on predefined rules
+* Generate a SignalEvent which contains order type (market/limit order) and the direction (long/short)
 Order Handler
-*Get SignalEvents and determine the quantities that should be bought/sold
-*Generate an OrderEvent containing order type, direction, and quantities
+* Get SignalEvents and determine the quantities that should be bought/sold
+* Generate an OrderEvent containing order type, direction, and quantities
 Broker
-*Get OrderEvents and route orders to a simulated or real brokerage
-*Once orders are filled, it creates a FillEvent which has executed price, commission, and the exchange where the order was filled
+* Get OrderEvents and route orders to a simulated or real brokerage
+* Once orders are filled, it creates a FillEvent which has executed price, commission, and the exchange where the order was filled
 Portfolio
-*Manage the whole portfolio. It tracks PnL, position, and the average price of ticker symbols
-*Get BarEvents and FillEvents to update the portfolio
+* Manage the whole portfolio. It tracks PnL, position, and the average price of ticker symbols
+* Get BarEvents and FillEvents to update the portfolio
 
 # Installation
 1. create a virtual environment
