@@ -98,6 +98,6 @@ trading_end = datetime(2022,12,31, 0, 00)
 trading_session = TradingSession(twsclient, ib_bar_handler, sma_crossover, portfolio, 
                                  max_order_handler, ib_broker, events_queue, 
                                  trading_schedule, trading_end, stat)
-#start trading
+
 trading_session.start_trading()
 ```
