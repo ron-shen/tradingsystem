@@ -34,7 +34,7 @@ Portfolio
 For backtesting,
 ```python
 import queue
-from tradingsystem.data_handler.historical_bar_handler import HistoricalBarHandler, get_data_from_csv, get_data_from_yahoo_finance
+from tradingsystem.data_handler.historical_bar_handler import HistoricalBarHandler, get_data_from_yahoo_finance
 from tradingsystem.strategy.sma_crossover import SMACrossover
 from tradingsystem.portfolio.portfolio import Portfolio
 from tradingsystem.order_handler.max_order_handler import MaxOrderHandler
