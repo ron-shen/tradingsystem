@@ -32,7 +32,7 @@ Portfolio
 
 # Examples
 For backtesting,
-```
+```python
 import queue
 from tradingsystem.data_handler.historical_bar_handler import HistoricalBarHandler, get_data_from_csv, get_data_from_yahoo_finance
 from tradingsystem.strategy.sma_crossover import SMACrossover
@@ -65,7 +65,7 @@ For live trading in IB,
 1. Open Trader Workstation (TWS) or IB Gateway
 2. Change timezone to UTC in options
 3. Run the code below
-```
+```python
 import queue
 from tradingsystem.data_handler.ib_real_time import IBRealTimeBarHandler
 from tradingsystem.strategy.sma_crossover import SMACrossover
